@@ -18,20 +18,29 @@ class CardSwiper extends StatelessWidget {
         layout: SwiperLayout.STACK,
         itemWidth: platformSize.width * 0.6,
         itemHeight: platformSize.height * 0.4,
-        itemBuilder: (_, int index) {
-          return GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'details',
-                arguments: 'move-instance'),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: FadeInImage(
-                placeholder: AssetImage('assets/images/loading.gif'),
-                image: NetworkImage('https://via.placeholder.com/300x400'),
-                fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
-              ),
-            ),
-          );
-        },
+        itemBuilder: (_, int index) => _MovieImageMain(),
+      ),
+    );
+  }
+}
+
+/* Este Widget Solo Va A Vivir Dentro De Movie Slider Y No
+ Se Lo Presente Al Mundo Exterior */
+class _MovieImageMain extends StatelessWidget {
+  const _MovieImageMain({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () =>
+          Navigator.pushNamed(context, 'details', arguments: 'move-instance'),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: FadeInImage(
+          placeholder: AssetImage('assets/images/loading.gif'),
+          image: NetworkImage('https://via.placeholder.com/300x400'),
+          fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
+        ),
       ),
     );
   }
