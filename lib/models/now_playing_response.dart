@@ -25,9 +25,9 @@ class NowPlayingResponse {
       NowPlayingResponse(
         page: json["page"],
         totalPages: json["total_pages"],
-        totalMovies: json["total_Movies"],
+        totalMovies: json["total_results"],
         dates: Dates.fromMap(json["dates"]),
-        results: List<Movie>.from(json["Movies"].map((x) => Movie.fromMap(x))),
+        results: List<Movie>.from(json["results"].map((x) => Movie.fromMap(x))),
       );
 }
 

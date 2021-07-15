@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,8 +9,12 @@ class MoviesProvider extends ChangeNotifier {
   String _baseUrl = 'api.themoviedb.org';
   String _apiKey = '921377099c0f476d58c37b8abc4e2d3a';
 
+  List<Movie> popularMovies = [];
+  List<Movie> onDisplayMovies = [];
+
   MoviesProvider() {
-    print('MoviesProvider Inicializado En Su Método Constructor');
+    /* print('MoviesProvider Inicializado En Su Método Constructor'); */
+    this.getPopularMovies();
     this.getOnDisplayMovies();
   }
 
@@ -20,10 +22,28 @@ class MoviesProvider extends ChangeNotifier {
     var url = Uri.https(this._baseUrl, '3/movie/now_playing',
         {'api_key': _apiKey, 'language': _language, 'page': '1'});
 
-    final response = await http.get(url);
+    final nowPlayingResponse = await http.get(url);
     final responseMapeadaPorLosModels =
-        NowPlayingResponse.fromJson(response.body);
+        NowPlayingResponse.fromJson(nowPlayingResponse.body);
 
-    print(responseMapeadaPorLosModels.results[1].title);
+    this.onDisplayMovies = responseMapeadaPorLosModels.results;
+    notifyListeners();
+  }
+
+  getPopularMovies() async {
+    var url = Uri.https(this._baseUrl, '3/movie/popular',
+        {'api_key': _apiKey, 'language': _language, 'page': '1'});
+
+    final popularResponse = await http.get(url);
+    final responseMapeadaPorLosModels =
+        PopularResponse.fromJson(popularResponse.body);
+
+    this.popularMovies = [
+      ...this.popularMovies,
+      ...responseMapeadaPorLosModels.results
+    ];
+
+    print(popularMovies[0]);
+    notifyListeners();
   }
 }

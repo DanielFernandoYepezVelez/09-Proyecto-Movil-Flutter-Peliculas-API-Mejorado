@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
+
+/* Widgets */
 import 'package:card_swiper/card_swiper.dart';
 
+/* Models */
+import 'package:peliculas_app/models/models.dart';
+
 class CardSwiper extends StatelessWidget {
-  const CardSwiper({Key? key}) : super(key: key);
+  final List<Movie> movies;
+
+  const CardSwiper({Key? key, required this.movies}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final platformSize = MediaQuery.of(context).size;
+
+    /* Aplicando Un Loading */
+    if (this.movies.length == 0) {
+      return Container(
+        width: double.infinity,
+        height: platformSize.height * 0.5,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Container(
       color: Colors.red,
@@ -14,11 +30,14 @@ class CardSwiper extends StatelessWidget {
       // height: 480,
       height: platformSize.height * 0.5,
       child: Swiper(
-        itemCount: 10,
+        itemCount: this.movies.length,
         layout: SwiperLayout.STACK,
         itemWidth: platformSize.width * 0.6,
         itemHeight: platformSize.height * 0.4,
-        itemBuilder: (_, int index) => _MovieImageMain(),
+        itemBuilder: (_, int index) {
+          final movie = this.movies[index];
+          return _MovieImageMain(posterImage: movie.getPosterImg());
+        },
       ),
     );
   }
@@ -27,7 +46,10 @@ class CardSwiper extends StatelessWidget {
 /* Este Widget Solo Va A Vivir Dentro De Movie Slider Y No
  Se Lo Presente Al Mundo Exterior */
 class _MovieImageMain extends StatelessWidget {
-  const _MovieImageMain({Key? key}) : super(key: key);
+  final String posterImage;
+
+  const _MovieImageMain({Key? key, required this.posterImage})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +60,7 @@ class _MovieImageMain extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: FadeInImage(
           placeholder: AssetImage('assets/images/loading.gif'),
-          image: NetworkImage('https://via.placeholder.com/300x400'),
+          image: NetworkImage(this.posterImage),
           fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
         ),
       ),
