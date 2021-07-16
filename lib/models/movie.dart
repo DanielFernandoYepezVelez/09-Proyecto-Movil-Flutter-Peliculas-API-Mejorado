@@ -53,11 +53,11 @@ class Movie {
       );
 
   getPosterImg() {
-    if (posterPath != null) {
+    if (posterPath == null) {
+      return 'https://mantenimientocode.xyz/images/not-found.jpg';
+    } else {
       return 'https://image.tmdb.org/t/p/w500/${this.posterPath}';
     }
-
-    return 'https://mantenimientocode.xyz/images/not-found.jpg';
   }
 
   getBackgroundImg() {

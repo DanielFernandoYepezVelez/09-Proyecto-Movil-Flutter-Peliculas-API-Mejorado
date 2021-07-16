@@ -9,6 +9,7 @@ class MoviesProvider extends ChangeNotifier {
   String _baseUrl = 'api.themoviedb.org';
   String _apiKey = '921377099c0f476d58c37b8abc4e2d3a';
 
+  int _popularPage = 0;
   List<Movie> popularMovies = [];
   List<Movie> onDisplayMovies = [];
 
@@ -18,32 +19,39 @@ class MoviesProvider extends ChangeNotifier {
     this.getOnDisplayMovies();
   }
 
-  getOnDisplayMovies() async {
-    var url = Uri.https(this._baseUrl, '3/movie/now_playing',
-        {'api_key': _apiKey, 'language': _language, 'page': '1'});
+  Future<String> _getJsonData(String segment, [int page = 1]) async {
+    var url = Uri.https(this._baseUrl, segment,
+        {'api_key': _apiKey, 'language': _language, 'page': '$page'});
 
-    final nowPlayingResponse = await http.get(url);
+    final response = await http.get(url);
+    return response.body;
+  }
+
+  getOnDisplayMovies() async {
+    final responseJsonData = await _getJsonData('3/movie/now_playing');
+
     final responseMapeadaPorLosModels =
-        NowPlayingResponse.fromJson(nowPlayingResponse.body);
+        NowPlayingResponse.fromJson(responseJsonData);
 
     this.onDisplayMovies = responseMapeadaPorLosModels.results;
     notifyListeners();
   }
 
   getPopularMovies() async {
-    var url = Uri.https(this._baseUrl, '3/movie/popular',
-        {'api_key': _apiKey, 'language': _language, 'page': '1'});
+    /* Antes De Hacer La Petición Voy A Incrementar La Página A La Que Va Ir La Solicitud */
+    _popularPage++;
 
-    final popularResponse = await http.get(url);
+    final responseJsonData =
+        await _getJsonData('3/movie/popular', _popularPage);
+
     final responseMapeadaPorLosModels =
-        PopularResponse.fromJson(popularResponse.body);
+        PopularResponse.fromJson(responseJsonData);
 
     this.popularMovies = [
       ...this.popularMovies,
       ...responseMapeadaPorLosModels.results
     ];
 
-    print(popularMovies[0]);
     notifyListeners();
   }
 }
