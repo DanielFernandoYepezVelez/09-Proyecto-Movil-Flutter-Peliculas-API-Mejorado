@@ -10,12 +10,19 @@ class MoviesProvider extends ChangeNotifier {
   String _apiKey = '921377099c0f476d58c37b8abc4e2d3a';
 
   int _popularPage = 0;
+  int _topRatePage = 0;
+  int _upcomingPage = 0;
+
   List<Movie> popularMovies = [];
+  List<Movie> topRateMovies = [];
+  List<Movie> upcomingMovies = [];
   List<Movie> onDisplayMovies = [];
 
   MoviesProvider() {
     /* print('MoviesProvider Inicializado En Su Método Constructor'); */
     this.getPopularMovies();
+    this.getRateTopMovies();
+    this.getUpcomingMovies();
     this.getOnDisplayMovies();
   }
 
@@ -39,7 +46,7 @@ class MoviesProvider extends ChangeNotifier {
 
   getPopularMovies() async {
     /* Antes De Hacer La Petición Voy A Incrementar La Página A La Que Va Ir La Solicitud */
-    _popularPage++;
+    this._popularPage++;
 
     final responseJsonData =
         await _getJsonData('3/movie/popular', _popularPage);
@@ -49,6 +56,42 @@ class MoviesProvider extends ChangeNotifier {
 
     this.popularMovies = [
       ...this.popularMovies,
+      ...responseMapeadaPorLosModels.results
+    ];
+
+    notifyListeners();
+  }
+
+/* Las Mejor Calificadas */
+  getRateTopMovies() async {
+    this._topRatePage++;
+
+    final responseJsonData =
+        await _getJsonData('3/movie/top_rated', _topRatePage);
+
+    final responseMapeadaPorLosModels =
+        TopRateResponse.fromJson(responseJsonData);
+
+    this.topRateMovies = [
+      ...this.topRateMovies,
+      ...responseMapeadaPorLosModels.results
+    ];
+
+    notifyListeners();
+  }
+
+  /* Próximas Peliculas */
+  getUpcomingMovies() async {
+    this._upcomingPage++;
+
+    final responseJsonData =
+        await _getJsonData('3/movie/upcoming', _topRatePage);
+
+    final responseMapeadaPorLosModels =
+        UpcomingResponse.fromJson(responseJsonData);
+
+    this.upcomingMovies = [
+      ...this.upcomingMovies,
       ...responseMapeadaPorLosModels.results
     ];
 

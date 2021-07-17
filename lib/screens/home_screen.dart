@@ -14,8 +14,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final moviesProvider = Provider.of<MoviesProvider>(context);
 
-    print(moviesProvider.onDisplayMovies);
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -36,8 +34,14 @@ class HomeScreen extends StatelessWidget {
               categoryTitle: 'Populares',
               movies: moviesProvider.popularMovies,
             ),
-            // MovieSlider(categoryTitle: 'Terror'),
-            // MovieSlider(categoryTitle: 'Comedia'),
+            MovieSlider(
+              categoryTitle: 'Mejor Calificadas',
+              movies: moviesProvider.topRateMovies,
+            ),
+            MovieSlider(
+              categoryTitle: 'Próximos Lanzamientos',
+              movies: moviesProvider.upcomingMovies,
+            ),
           ],
         ),
       ),
