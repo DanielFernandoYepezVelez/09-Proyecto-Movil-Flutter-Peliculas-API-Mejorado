@@ -3,17 +3,49 @@ import 'package:flutter/material.dart';
 /* Models */
 import 'package:peliculas_app/models/models.dart';
 
-class MovieSlider extends StatelessWidget {
+class MovieSlider extends StatefulWidget {
   final List<Movie> movies;
+  final Function onNextPage;
   final String? categoryTitle;
 
-  const MovieSlider({Key? key, this.categoryTitle, required this.movies})
-      : super(key: key);
+  const MovieSlider({
+    Key? key,
+    this.categoryTitle,
+    required this.onNextPage,
+    required this.movies,
+  }) : super(key: key);
+
+  @override
+  _MovieSliderState createState() => _MovieSliderState();
+}
+
+class _MovieSliderState extends State<MovieSlider> {
+  final scrollController = new ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      /* Posición Actual En Pixeles Del Scroll */
+      // print(scrollController.position.pixels);
+
+      /* Posición Final En Pixeles Del Scroll */
+      // print(scrollController.position.maxScrollExtent);
+
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 500) {
+        /* TODO: LLamar Provider */
+        // print('Obtener La Siguiente Página');
+        this.widget.onNextPage();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 262,
+      height: 270,
+      /* 262 */
       width: double.infinity,
       color: Colors.blueAccent,
       child: Column(
@@ -22,11 +54,11 @@ class MovieSlider extends StatelessWidget {
           SizedBox(height: 5),
 
           /* Aqui Yo Ya Estoy Seguro Que No Va A Ser Nulo, Por Ende Agrego El Operador (!) */
-          if (this.categoryTitle != null)
+          if (this.widget.categoryTitle != null)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                this.categoryTitle!,
+                this.widget.categoryTitle!,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
@@ -35,10 +67,11 @@ class MovieSlider extends StatelessWidget {
           SizedBox(height: 5),
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: this.movies.length,
+              itemCount: this.widget.movies.length,
               itemBuilder: (_, int index) =>
-                  _MoviePoster(movie: this.movies[index]),
+                  _MoviePoster(movie: this.widget.movies[index]),
             ),
           ),
         ],
@@ -64,8 +97,8 @@ class _MoviePoster extends StatelessWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'details',
-                arguments: 'movie-instance'),
+            onTap: () =>
+                Navigator.pushNamed(context, 'details', arguments: this.movie),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: FadeInImage(

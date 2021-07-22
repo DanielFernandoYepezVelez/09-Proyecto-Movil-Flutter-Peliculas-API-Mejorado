@@ -33,10 +33,10 @@ class CardSwiper extends StatelessWidget {
         itemCount: this.movies.length,
         layout: SwiperLayout.STACK,
         itemWidth: platformSize.width * 0.6,
-        itemHeight: platformSize.height * 0.4,
+        itemHeight: platformSize.height * 0.45,
         itemBuilder: (_, int index) {
           final movie = this.movies[index];
-          return _MovieImageMain(posterImage: movie.getPosterImg());
+          return _MovieImageMain(movieCard: movie);
         },
       ),
     );
@@ -46,21 +46,20 @@ class CardSwiper extends StatelessWidget {
 /* Este Widget Solo Va A Vivir Dentro De Movie Slider Y No
  Se Lo Presente Al Mundo Exterior */
 class _MovieImageMain extends StatelessWidget {
-  final String posterImage;
+  final Movie movieCard;
 
-  const _MovieImageMain({Key? key, required this.posterImage})
-      : super(key: key);
+  const _MovieImageMain({Key? key, required this.movieCard}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () =>
-          Navigator.pushNamed(context, 'details', arguments: 'move-instance'),
+          Navigator.pushNamed(context, 'details', arguments: movieCard),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: FadeInImage(
           placeholder: AssetImage('assets/images/loading.gif'),
-          image: NetworkImage(this.posterImage),
+          image: NetworkImage(this.movieCard.getPosterImg()),
           fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
         ),
       ),
