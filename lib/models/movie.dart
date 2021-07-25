@@ -53,7 +53,7 @@ class Movie {
       );
 
   getPosterImg() {
-    if (posterPath == null) {
+    if (this.posterPath == null) {
       return 'https://mantenimientocode.xyz/images/not-found.jpg';
     } else {
       return 'https://image.tmdb.org/t/p/w500/${this.posterPath}';
@@ -61,7 +61,7 @@ class Movie {
   }
 
   getBackgroundImg() {
-    if (posterPath == null) {
+    if (this.backdropPath == null) {
       return 'https://mantenimientocode.xyz/images/not-found.jpg';
     } else {
       return 'https://image.tmdb.org/t/p/w500/${this.backdropPath}';

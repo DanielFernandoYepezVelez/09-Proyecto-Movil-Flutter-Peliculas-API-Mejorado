@@ -25,7 +25,7 @@ class CardSwiper extends StatelessWidget {
     }
 
     return Container(
-      color: Colors.red,
+      // color: Colors.red,
       width: double.infinity,
       // height: 480,
       height: platformSize.height * 0.5,

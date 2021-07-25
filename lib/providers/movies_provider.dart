@@ -18,6 +18,9 @@ class MoviesProvider extends ChangeNotifier {
   List<Movie> upcomingMovies = [];
   List<Movie> onDisplayMovies = [];
 
+  /* Una Forma Diferente Para Hacer Las Peticiones http De Actores */
+  Map<int, List<Cast>> moviesCast = {};
+
   MoviesProvider() {
     /* print('MoviesProvider Inicializado En Su Método Constructor'); */
     this.getPopularMovies();
@@ -96,5 +99,25 @@ class MoviesProvider extends ChangeNotifier {
     ];
 
     notifyListeners();
+  }
+
+  /* Actores En La Pantalla De Details */
+  Future<List<Cast>> getMovieCast(int movieId) async {
+    /* Revisar El Mapa Para Verificar El ID */
+    if (moviesCast.containsKey(movieId)) return moviesCast[movieId]!;
+
+    print('Pidiendo Información Al Servidor - Cast');
+
+    final responseJsonData = await _getJsonData('3/movie/$movieId/credits');
+
+    final responseMapeadaPorLosModels =
+        CreditsResponse.fromJson(responseJsonData);
+
+    /* En Mi Mapa Estoy Almacenando El Resultado De La Petición, La Llave 
+       Va A Ser El ID De La Pelicula Y El Valor La Lista De Actores */
+    moviesCast[movieId] = responseMapeadaPorLosModels.cast;
+
+    /* Estoy Retornando Una Lista De Actores */
+    return responseMapeadaPorLosModels.cast;
   }
 }

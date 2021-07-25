@@ -47,7 +47,7 @@ class _MovieSliderState extends State<MovieSlider> {
       height: 270,
       /* 262 */
       width: double.infinity,
-      color: Colors.blueAccent,
+      // color: Colors.blueAccent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -92,7 +92,7 @@ class _MoviePoster extends StatelessWidget {
     return Container(
       width: 130,
       height: 190,
-      color: Colors.green,
+      // color: Colors.green,
       margin: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
