@@ -30,7 +30,7 @@ class MoviesProvider extends ChangeNotifier {
   }
 
   Future<String> _getJsonData(String segment, [int page = 1]) async {
-    var url = Uri.https(this._baseUrl, segment,
+    final url = Uri.https(this._baseUrl, segment,
         {'api_key': _apiKey, 'language': _language, 'page': '$page'});
 
     final response = await http.get(url);
@@ -119,5 +119,17 @@ class MoviesProvider extends ChangeNotifier {
 
     /* Estoy Retornando Una Lista De Actores */
     return responseMapeadaPorLosModels.cast;
+  }
+
+  Future<List<Movie>> searchMovies(String query) async {
+    final url = Uri.https(this._baseUrl, '3/search/movie',
+        {'api_key': _apiKey, 'language': _language, 'query': query});
+
+    final responseJsonData = await http.get(url);
+
+    final responseMapeadaPorLosModels =
+        SearchResponse.fromJson(responseJsonData.body);
+
+    return responseMapeadaPorLosModels.results;
   }
 }

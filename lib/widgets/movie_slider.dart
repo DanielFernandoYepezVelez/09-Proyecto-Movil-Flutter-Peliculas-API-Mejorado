@@ -70,8 +70,10 @@ class _MovieSliderState extends State<MovieSlider> {
               controller: scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: this.widget.movies.length,
-              itemBuilder: (_, int index) =>
-                  _MoviePoster(movie: this.widget.movies[index]),
+              itemBuilder: (_, int index) => _MoviePoster(
+                  movie: this.widget.movies[index],
+                  heroID:
+                      '${this.widget.categoryTitle}-${index}-${this.widget.movies[index].id}'),
             ),
           ),
         ],
@@ -84,11 +86,15 @@ class _MovieSliderState extends State<MovieSlider> {
  Se Lo Presente Al Mundo Exterior */
 class _MoviePoster extends StatelessWidget {
   final Movie movie;
+  final String heroID;
 
-  const _MoviePoster({Key? key, required this.movie}) : super(key: key);
+  const _MoviePoster({Key? key, required this.movie, required this.heroID})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    movie.heroAnimationID = this.heroID;
+
     return Container(
       width: 130,
       height: 190,
@@ -99,14 +105,17 @@ class _MoviePoster extends StatelessWidget {
           GestureDetector(
             onTap: () =>
                 Navigator.pushNamed(context, 'details', arguments: this.movie),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: FadeInImage(
-                placeholder: AssetImage('assets/images/no-image.jpg'),
-                image: NetworkImage(this.movie.getPosterImg()),
-                width: 130,
-                height: 190,
-                fit: BoxFit.cover,
+            child: Hero(
+              tag: this.movie.heroAnimationID!,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: FadeInImage(
+                  placeholder: AssetImage('assets/images/no-image.jpg'),
+                  image: NetworkImage(this.movie.getPosterImg()),
+                  width: 130,
+                  height: 190,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

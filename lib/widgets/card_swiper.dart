@@ -52,15 +52,20 @@ class _MovieImageMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    this.movieCard.heroAnimationID = 'swiper-${this.movieCard.id}';
+
     return GestureDetector(
       onTap: () =>
           Navigator.pushNamed(context, 'details', arguments: movieCard),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: FadeInImage(
-          placeholder: AssetImage('assets/images/loading.gif'),
-          image: NetworkImage(this.movieCard.getPosterImg()),
-          fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
+      child: Hero(
+        tag: this.movieCard.heroAnimationID!,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: FadeInImage(
+            placeholder: AssetImage('assets/images/loading.gif'),
+            image: NetworkImage(this.movieCard.getPosterImg()),
+            fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
+          ),
         ),
       ),
     );
