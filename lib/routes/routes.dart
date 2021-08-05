@@ -6,4 +6,5 @@ import 'package:peliculas_app/screens/screens.dart';
 final Map<String, Widget Function(BuildContext)> appRoutes = {
   'home': (_) => HomeScreen(),
   'details': (_) => DetailsScreen(),
+  'actor': (_) => DetailsActorScreen(),
 };

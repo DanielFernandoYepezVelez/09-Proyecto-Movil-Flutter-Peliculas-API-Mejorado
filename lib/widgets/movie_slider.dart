@@ -71,9 +71,10 @@ class _MovieSliderState extends State<MovieSlider> {
               scrollDirection: Axis.horizontal,
               itemCount: this.widget.movies.length,
               itemBuilder: (_, int index) => _MoviePoster(
-                  movie: this.widget.movies[index],
-                  heroID:
-                      '${this.widget.categoryTitle}-${index}-${this.widget.movies[index].id}'),
+                movie: this.widget.movies[index],
+                heroID:
+                    '${this.widget.categoryTitle}-${index}-${this.widget.movies[index].id}',
+              ),
             ),
           ),
         ],
