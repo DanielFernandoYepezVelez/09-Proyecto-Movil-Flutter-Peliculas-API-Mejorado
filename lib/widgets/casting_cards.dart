@@ -5,6 +5,9 @@ import 'package:provider/provider.dart';
 /* Movies Provider */
 import 'package:peliculas_app/providers/movies_provider.dart';
 
+/* Actor Provider */
+import 'package:peliculas_app/providers/actor_provider.dart';
+
 /* Models */
 import 'package:peliculas_app/models/models.dart';
 
@@ -63,8 +66,8 @@ class _CastCard extends StatelessWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'actor',
-                arguments: 'actor-instance'),
+            onTap: () =>
+                Navigator.pushNamed(context, 'actor', arguments: this.actor.id),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: FadeInImage(

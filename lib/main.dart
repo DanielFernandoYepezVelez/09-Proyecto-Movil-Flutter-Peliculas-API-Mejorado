@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peliculas_app/providers/actor_provider.dart';
 import 'package:peliculas_app/providers/movies_provider.dart';
 
 /* Routes */
@@ -21,6 +22,7 @@ class AppState extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MoviesProvider(), lazy: false),
+        ChangeNotifierProvider(create: (_) => ActorProvider(), lazy: false),
       ],
       child: MyApp(),
     );

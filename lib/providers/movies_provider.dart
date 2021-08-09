@@ -29,14 +29,18 @@ class MoviesProvider extends ChangeNotifier {
     this.getOnDisplayMovies();
   }
 
+  /* ======================= PETICIÓN HTTP (GET JSON DATA) ============================= */
   Future<String> _getJsonData(String segment, [int page = 1]) async {
     final url = Uri.https(this._baseUrl, segment,
         {'api_key': _apiKey, 'language': _language, 'page': '$page'});
 
+    /* TODO: Esto Debe Ingresarse Dentro De Un Try - Catch, En Caso Tal Que Falle La Petición */
     final response = await http.get(url);
     return response.body;
   }
+  /* ================================================================= */
 
+  /* ======================= GET MOVIES CARD_SWIPER ============================= */
   getOnDisplayMovies() async {
     final responseJsonData = await _getJsonData('3/movie/now_playing');
 
@@ -46,7 +50,9 @@ class MoviesProvider extends ChangeNotifier {
     this.onDisplayMovies = responseMapeadaPorLosModels.results;
     notifyListeners();
   }
+  /* ================================================================= */
 
+  /* ======================= GET MOVIES POPULARES ============================= */
   getPopularMovies() async {
     /* Antes De Hacer La Petición Voy A Incrementar La Página A La Que Va Ir La Solicitud */
     this._popularPage++;
@@ -64,8 +70,9 @@ class MoviesProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+  /* ================================================================= */
 
-/* Las Mejor Calificadas */
+  /* ======================= GET MOVIES MEJOR CALIFICADAS ============================= */
   getRateTopMovies() async {
     this._topRatePage++;
 
@@ -82,8 +89,9 @@ class MoviesProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+  /* ================================================================= */
 
-  /* Próximas Peliculas */
+  /* ======================= GET MOVIES PROXIMOS LANZAMIENTOS ============================= */
   getUpcomingMovies() async {
     this._upcomingPage++;
 
@@ -100,10 +108,12 @@ class MoviesProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+  /* ================================================================= */
 
-  /* Actores En La Pantalla De Details */
+  /* ======================= GET ACTORS PHOTO DETAILS (HTTP) ============================= */
   Future<List<Cast>> getMovieCast(int movieId) async {
-    /* Revisar El Mapa Para Verificar El ID */
+    /* Revisar El Mapa Para Verificar Si Existe Ya Esa Pelicula
+    Por La Clave Del ID Y No Volver Hacer Una Petición Http */
     if (moviesCast.containsKey(movieId)) return moviesCast[movieId]!;
 
     print('Pidiendo Información Al Servidor - Cast');
@@ -113,13 +123,15 @@ class MoviesProvider extends ChangeNotifier {
     final responseMapeadaPorLosModels =
         CreditsResponse.fromJson(responseJsonData);
 
-    /* En Mi Mapa Estoy Almacenando El Resultado De La Petición, La Llave 
-       Va A Ser El ID De La Pelicula Y El Valor La Lista De Actores */
+    /* En Mi Mapa Estoy Almacenando El Resultado De La Petición, La Clave 
+       Va A Ser El ID De La Pelicula Y El Valor La Lista De Actores 
+       Que Pertenecen A Dicha Pelicula */
     moviesCast[movieId] = responseMapeadaPorLosModels.cast;
 
     /* Estoy Retornando Una Lista De Actores */
     return responseMapeadaPorLosModels.cast;
   }
+  /* ================================================================= */
 
   Future<List<Movie>> searchMovies(String query) async {
     final url = Uri.https(this._baseUrl, '3/search/movie',
@@ -132,4 +144,6 @@ class MoviesProvider extends ChangeNotifier {
 
     return responseMapeadaPorLosModels.results;
   }
+  /* ================================================================= */
+
 }
