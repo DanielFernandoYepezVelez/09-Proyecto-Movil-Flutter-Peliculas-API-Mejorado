@@ -107,13 +107,16 @@ class _PosterAndTitle extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: FadeInImage(
-              width: 110,
-              height: 160,
-              placeholder: AssetImage('assets/images/no-image.jpg'),
-              image: NetworkImage(this.actor.getProfilePath()),
+          Hero(
+            tag: 'actor-${this.actor.id}-1',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: FadeInImage(
+                width: 110,
+                height: 160,
+                placeholder: AssetImage('assets/images/no-image.jpg'),
+                image: NetworkImage(this.actor.getProfilePath()),
+              ),
             ),
           ),
           SizedBox(width: 20),

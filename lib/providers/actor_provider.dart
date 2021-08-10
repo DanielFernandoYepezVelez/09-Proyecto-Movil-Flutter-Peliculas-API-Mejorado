@@ -14,7 +14,7 @@ class ActorProvider extends ChangeNotifier {
   Map<int, PeopleResponse> actorInformation = {};
 
   ActorProvider() {
-    print('ActorProvider Inicializado Método Constructor "Multiprovider"');
+    // print('ActorProvider Inicializado Método Constructor "Multiprovider"');
   }
 
   /* ======================= PETICIÓN HTTP (GET JSON DATA) ============================= */
@@ -37,7 +37,7 @@ class ActorProvider extends ChangeNotifier {
 
     final responseJsonData = await _getJsonData('3/person/$actorId');
 
-    print('Aqui Hacemos La Petición Para La Información Del Actor');
+    // print('Aqui Hacemos La Petición Para La Información Del Actor');
 
     final responseMapeadaPorLosModels =
         PeopleResponse.fromJson(responseJsonData);

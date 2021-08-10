@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+/* Helpers */
+import 'package:peliculas_app/helpers/debouncer.dart';
 
 /* Models Para Mapear La Data */
 import 'package:peliculas_app/models/models.dart';
@@ -20,6 +25,15 @@ class MoviesProvider extends ChangeNotifier {
 
   /* Una Forma Diferente Para Hacer Las Peticiones http De Actores */
   Map<int, List<Cast>> moviesCast = {};
+
+  final debouncer = Debouncer(duration: Duration(milliseconds: 500));
+
+  /* Implementando El Debouncer Con El StreamController */
+  final StreamController<List<Movie>> _suggestionStreamController =
+      new StreamController.broadcast();
+
+  Stream<List<Movie>> get suggestionStream =>
+      this._suggestionStreamController.stream;
 
   MoviesProvider() {
     /* print('MoviesProvider Inicializado En Su Método Constructor'); */
@@ -116,7 +130,7 @@ class MoviesProvider extends ChangeNotifier {
     Por La Clave Del ID Y No Volver Hacer Una Petición Http */
     if (moviesCast.containsKey(movieId)) return moviesCast[movieId]!;
 
-    print('Pidiendo Información Al Servidor - Cast');
+    // print('Pidiendo Información Al Servidor - Cast');
 
     final responseJsonData = await _getJsonData('3/movie/$movieId/credits');
 
@@ -133,6 +147,7 @@ class MoviesProvider extends ChangeNotifier {
   }
   /* ================================================================= */
 
+  /* ======================= SEARCH MOVIE ============================= */
   Future<List<Movie>> searchMovies(String query) async {
     final url = Uri.https(this._baseUrl, '3/search/movie',
         {'api_key': _apiKey, 'language': _language, 'query': query});
@@ -144,6 +159,21 @@ class MoviesProvider extends ChangeNotifier {
 
     return responseMapeadaPorLosModels.results;
   }
-  /* ================================================================= */
 
+  // Agrega El Valor Del Query Al Stream, Pero Cuando La Persona Deja De Escribir
+  void getSuggetionsByQuery(String searchItem) {
+    debouncer.value = '';
+    debouncer.onValue = (value) async {
+      // print('Tenemos Valor a buscar: $value');
+      final results = await this.searchMovies(value);
+      this._suggestionStreamController.add(results);
+    };
+
+    final timer = Timer.periodic(Duration(milliseconds: 300), (_) {
+      debouncer.value = searchItem;
+    });
+
+    Future.delayed(Duration(milliseconds: 301)).then((value) => timer.cancel());
+  }
+  /* ================================================================= */
 }

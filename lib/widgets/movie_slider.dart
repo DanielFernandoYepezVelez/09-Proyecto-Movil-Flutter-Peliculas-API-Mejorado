@@ -94,7 +94,7 @@ class _MoviePoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    movie.heroAnimationID = this.heroID;
+    this.movie.heroAnimationID = this.heroID;
 
     return Container(
       width: 130,

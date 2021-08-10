@@ -49,6 +49,7 @@ class MovieSearchDelegate extends SearchDelegate {
     );
   }
 
+  /* Este Método Se Dispara Cada Vez Que Una Persona Dispara Una Tecla */
   @override
   Widget buildSuggestions(BuildContext context) {
     /* this.query Ya Viene Implicito De La Clase SearchDelegate */
@@ -57,9 +58,12 @@ class MovieSearchDelegate extends SearchDelegate {
     }
 
     final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+    /* Cada Vez Que Se Toque Una Tecla, Se LLama Este Método */
+    moviesProvider.getSuggetionsByQuery(this.query);
 
-    return FutureBuilder(
-      future: moviesProvider.searchMovies(this.query),
+    /* Este StreamBuilder() Solo Se Va A Redibujar Unicamente Cuando El suggestionStream Emite Un Valor */
+    return StreamBuilder(
+      stream: moviesProvider.suggestionStream,
       builder: (_, AsyncSnapshot<List<Movie>> snapshot) {
         if (!snapshot.hasData) {
           return this._emptyContainer();
@@ -73,6 +77,23 @@ class MovieSearchDelegate extends SearchDelegate {
         );
       },
     );
+
+    // Implementanción Sin El StreamController, Funciona Correctamente!
+    /* return FutureBuilder(
+      future: moviesProvider.searchMovies(this.query),
+      builder: (_, AsyncSnapshot<List<Movie>> snapshot) {
+        if (!snapshot.hasData) {
+          return this._emptyContainer();
+        }
+
+        final movies = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: movies.length,
+          itemBuilder: (_, int index) => _MovieItem(movie: movies[index]),
+        );
+      },
+    ); */
   }
 }
 
