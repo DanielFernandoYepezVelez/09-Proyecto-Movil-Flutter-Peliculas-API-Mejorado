@@ -1,4 +1,4 @@
-package com.danielnextapp.fluttermovies
+package com.nextappoficial.catalogomovies
 
 import io.flutter.embedding.android.FlutterActivity
 
