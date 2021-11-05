@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /* Actor Provider */
 import 'package:peliculas_app/providers/actor_provider.dart';
@@ -8,8 +9,40 @@ import 'package:peliculas_app/providers/actor_provider.dart';
 /* Actor Model */
 import 'package:peliculas_app/models/models.dart';
 
-class DetailsActorScreen extends StatelessWidget {
+class DetailsActorScreen extends StatefulWidget {
   const DetailsActorScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DetailsActorScreen> createState() => _DetailsActorScreenState();
+}
+
+class _DetailsActorScreenState extends State<DetailsActorScreen> {
+  BannerAd? bannerAd;
+  bool isLoaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: "ca-app-pub-8802721251339887/6087297639",
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isLoaded = true;
+          });
+          // print("Banner Ad Loaded");
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+      request: AdRequest(),
+    );
+
+    bannerAd!.load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +81,19 @@ class DetailsActorScreen extends StatelessWidget {
             slivers: [
               _CustomAppBar(actor: actorInformation),
               SliverList(
-                delegate: SliverChildListDelegate([
-                  _PosterAndTitle(actor: actorInformation),
-                  _Overview(actor: actorInformation),
-                ]),
+                delegate: SliverChildListDelegate(
+                  [
+                    _PosterAndTitle(actor: actorInformation),
+                    isLoaded
+                        ? Container(
+                            height: 50,
+                            child: AdWidget(ad: bannerAd!),
+                          )
+                        : SizedBox(),
+                    _Overview(actor: actorInformation),
+                    SizedBox(height: 10),
+                  ],
+                ),
               ),
             ],
           ),
@@ -103,7 +145,7 @@ class _PosterAndTitle extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: EdgeInsets.only(top: 20, bottom: 10),
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
@@ -162,20 +204,64 @@ class _PosterAndTitle extends StatelessWidget {
   }
 }
 
-class _Overview extends StatelessWidget {
+class _Overview extends StatefulWidget {
   final PeopleResponse actor;
 
   const _Overview({Key? key, required this.actor}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-      child: Text(
-        this.actor.biography,
-        style: Theme.of(context).textTheme.subtitle1,
-        textAlign: TextAlign.justify,
+  State<_Overview> createState() => _OverviewState();
+}
+
+class _OverviewState extends State<_Overview> {
+  BannerAd? bannerAdTwo;
+  bool isLoadedTwo = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    bannerAdTwo = BannerAd(
+      size: AdSize.banner,
+      adUnitId: "ca-app-pub-8802721251339887/6087297639",
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isLoadedTwo = true;
+          });
+          // print("Banner Ad Two Loaded");
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
       ),
+      request: AdRequest(),
     );
+
+    bannerAdTwo!.load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return this.widget.actor.biography.length > 0
+        ? Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: Text(
+                  this.widget.actor.biography,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+              isLoadedTwo
+                  ? Container(
+                      height: 50,
+                      child: AdWidget(ad: bannerAdTwo!),
+                    )
+                  : SizedBox()
+            ],
+          )
+        : SizedBox();
   }
 }

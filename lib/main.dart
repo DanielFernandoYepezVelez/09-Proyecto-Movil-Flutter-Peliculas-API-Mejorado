@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+/* Providers Personal */
 import 'package:peliculas_app/providers/actor_provider.dart';
 import 'package:peliculas_app/providers/movies_provider.dart';
 
@@ -8,7 +11,11 @@ import 'package:peliculas_app/routes/routes.dart';
 /* Providers */
 import 'package:provider/provider.dart';
 
-void main() => runApp(AppState());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  runApp(AppState());
+}
 
 /* Este Es El Primer Widget Que Se va A Crear, Es Decir,
 Después De Este Widget En Adelante, En Todos Los Widgets 

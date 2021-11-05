@@ -5,6 +5,9 @@
         android:label="Movies"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/launcher_icon">
+        <meta-data
+          android:name="com.google.android.gms.ads.APPLICATION_ID"
+          android:value="ca-app-pub-8802721251339887~5461543880"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

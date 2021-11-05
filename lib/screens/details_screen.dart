@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /* Models */
 import 'package:peliculas_app/models/models.dart';
@@ -6,12 +7,67 @@ import 'package:peliculas_app/models/models.dart';
 /* Widgets */
 import 'package:peliculas_app/widgets/widgets.dart';
 
-class DetailsScreen extends StatelessWidget {
+class DetailsScreen extends StatefulWidget {
   const DetailsScreen({Key? key}) : super(key: key);
 
   @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  BannerAd? bannerAd;
+  BannerAd? bannerAdTwo;
+  bool isLoaded = false;
+  bool isLoadedTwo = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: "ca-app-pub-8802721251339887/6087297639",
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isLoaded = true;
+          });
+          // print("Banner Ad Loaded");
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+      request: AdRequest(),
+    );
+
+    bannerAd!.load();
+
+    /* ---------------------------------------------- */
+
+    bannerAdTwo = BannerAd(
+      size: AdSize.banner,
+      adUnitId: "ca-app-pub-8802721251339887/6087297639",
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isLoadedTwo = true;
+          });
+          // print("Banner Ad Two Loaded");
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+      request: AdRequest(),
+    );
+
+    bannerAdTwo!.load();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    /* TODO: Cambiar Por Una Instancia De Movie */
+    /* Cambiar Por Una Instancia De Movie */
     /* final String movie = ModalRoute.of(context)?.settings.arguments.toString() ?? 'no-movie'; */
     final Movie movie = ModalRoute.of(context)!.settings.arguments as Movie;
 
@@ -23,7 +79,19 @@ class DetailsScreen extends StatelessWidget {
             delegate: SliverChildListDelegate(
               [
                 _PosterAndTitle(moviePoster: movie),
+                isLoaded
+                    ? Container(
+                        height: 50,
+                        child: AdWidget(ad: bannerAd!),
+                      )
+                    : SizedBox(),
                 _Overview(movieOverview: movie),
+                isLoadedTwo
+                    ? Container(
+                        height: 50,
+                        child: AdWidget(ad: bannerAdTwo!),
+                      )
+                    : SizedBox(),
                 CastingCards(movieId: movie.id),
               ],
             ),
@@ -82,7 +150,7 @@ class _PosterAndTitle extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: EdgeInsets.only(top: 20, bottom: 10),
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
@@ -119,8 +187,10 @@ class _PosterAndTitle extends StatelessWidget {
                   children: [
                     Icon(Icons.star_outline, size: 15, color: Colors.grey),
                     SizedBox(width: 5),
-                    Text('${this.moviePoster.voteAverage}',
-                        style: textTheme.caption),
+                    Text(
+                      '${this.moviePoster.voteAverage}',
+                      style: textTheme.caption,
+                    ),
                   ],
                 ),
               ],
@@ -139,13 +209,17 @@ class _Overview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-      child: Text(
-        this.movieOverview.overview,
-        style: Theme.of(context).textTheme.subtitle1,
-        textAlign: TextAlign.justify,
-      ),
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          child: Text(
+            this.movieOverview.overview,
+            style: Theme.of(context).textTheme.subtitle1,
+            textAlign: TextAlign.justify,
+          ),
+        ),
+      ],
     );
   }
 }
