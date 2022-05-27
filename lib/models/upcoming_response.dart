@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 /* Movie Models */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 class UpcomingResponse {
   int page;

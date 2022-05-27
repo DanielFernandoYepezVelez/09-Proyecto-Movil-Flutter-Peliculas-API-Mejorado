@@ -1,25 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /* Providers Personal */
-import 'package:peliculas_app/providers/actor_provider.dart';
-import 'package:peliculas_app/providers/movies_provider.dart';
+import 'package:movies_api_flutter/providers/actor_provider.dart';
+import 'package:movies_api_flutter/providers/movies_provider.dart';
 
 /* Routes */
-import 'package:peliculas_app/routes/routes.dart';
+import 'package:movies_api_flutter/routes/routes.dart';
 
-/* Providers */
-import 'package:provider/provider.dart';
+AppOpenAd? _appOpenAd;
 
-void main() {
+Future<void> _loadAppOpenAd() async {
+  await AppOpenAd.load(
+    // adUnitId: 'ca-app-pub-3940256099942544/3419835294',
+    adUnitId: 'ca-app-pub-8702651755109746/9887107421',
+    request: const AdRequest(),
+    adLoadCallback: AppOpenAdLoadCallback(
+      onAdLoaded: (ad) {
+        //print('Ad Is Loaded');
+        _appOpenAd = ad;
+        _appOpenAd!.show();
+      },
+      onAdFailedToLoad: (error) {
+        //print('Ad Failed To Load ${error}');
+        _appOpenAd?.dispose();
+      },
+    ),
+    orientation: AppOpenAd.orientationPortrait,
+  );
+}
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
-  runApp(AppState());
+  await MobileAds.instance.initialize();
+  await _loadAppOpenAd();
+  runApp(const AppState());
 }
 
 /* Este Es El Primer Widget Que Se va A Crear, Es Decir,
-Después De Este Widget En Adelante, En Todos Los Widgets 
-Que Yo Quiera Tengo Acceso A Esta Misma Instancia De 
+Después De Este Widget En Adelante, En Todos Los Widgets
+Que Yo Quiera Tengo Acceso A Esta Misma Instancia De
 MoviesProvider */
 class AppState extends StatelessWidget {
   const AppState({Key? key}) : super(key: key);
@@ -31,21 +52,23 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MoviesProvider(), lazy: false),
         ChangeNotifierProvider(create: (_) => ActorProvider(), lazy: false),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     );
   }
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Peliculas App',
+      title: 'Peliculas',
       initialRoute: 'home',
       routes: appRoutes,
       theme: ThemeData.dark().copyWith(
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           color: Colors.indigo,
         ),
       ),

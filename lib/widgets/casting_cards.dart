@@ -1,16 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /* Movies Provider */
-import 'package:peliculas_app/providers/movies_provider.dart';
+import 'package:movies_api_flutter/providers/movies_provider.dart';
 
 /* Actor Provider */
 // import 'package:peliculas_app/providers/actor_provider.dart';
 
 /* Models */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 class CastingCards extends StatelessWidget {
   final int movieId;
@@ -27,7 +26,7 @@ class CastingCards extends StatelessWidget {
       future: moviesProvider.getMovieCast(movieId),
       builder: (_, AsyncSnapshot<List<Cast>> snapshot) {
         if (!snapshot.hasData) {
-          return Container(
+          return const SizedBox(
             height: 180,
             child: CupertinoActivityIndicator(),
           );
@@ -37,7 +36,7 @@ class CastingCards extends StatelessWidget {
         final List<Cast> cast = snapshot.data!;
 
         return Container(
-          margin: EdgeInsets.only(bottom: 30, top: 10),
+          margin: const EdgeInsets.only(bottom: 30, top: 10),
           width: double.infinity,
           height: 180,
           // color: Colors.blueGrey,
@@ -62,34 +61,10 @@ class _CastCard extends StatefulWidget {
 }
 
 class _CastCardState extends State<_CastCard> {
-  InterstitialAd? interstitialAd;
-  bool isLoading = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    InterstitialAd.load(
-      adUnitId: "ca-app-pub-8802721251339887/9475028243",
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          setState(() {
-            this.isLoading = true;
-            this.interstitialAd = ad;
-          });
-          // print('Ad Loaded');
-        },
-        onAdFailedToLoad: (error) {
-          // print('InterstitialAd failed to load: $error');
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       width: 110,
       height: 100,
       // color: Colors.deepPurple,
@@ -97,30 +72,29 @@ class _CastCardState extends State<_CastCard> {
         children: [
           GestureDetector(
             onTap: () {
-              if (this.isLoading) {
-                this.interstitialAd!.show();
-              }
-
-              Navigator.pushNamed(context, 'actor',
-                  arguments: this.widget.actor.id);
+              Navigator.pushNamed(
+                context,
+                'actor',
+                arguments: widget.actor.id,
+              );
             },
             child: Hero(
-              tag: 'actor-${this.widget.actor.id}-1',
+              tag: 'actor-${widget.actor.id}-1',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: FadeInImage(
                   width: 100,
                   height: 140,
                   fit: BoxFit.cover,
-                  placeholder: AssetImage('assets/images/no-image.jpg'),
-                  image: NetworkImage(this.widget.actor.getProfilePath()),
+                  placeholder: const AssetImage('assets/images/no-image.jpg'),
+                  image: NetworkImage(widget.actor.getProfilePath()),
                 ),
               ),
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
-            this.widget.actor.name,
+            widget.actor.name,
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,

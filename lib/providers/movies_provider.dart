@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 /* Helpers */
-import 'package:peliculas_app/helpers/debouncer.dart';
+import '../helpers/debouncer.dart';
 
 /* Models Para Mapear La Data */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 class MoviesProvider extends ChangeNotifier {
-  String _language = 'es-ES';
-  String _baseUrl = 'api.themoviedb.org';
-  String _apiKey = '921377099c0f476d58c37b8abc4e2d3a';
+  final String _language = 'es-ES';
+  final String _baseUrl = 'api.themoviedb.org';
+  final String _apiKey = '921377099c0f476d58c37b8abc4e2d3a';
 
   int _popularPage = 0;
   int _topRatePage = 0;
@@ -30,22 +30,22 @@ class MoviesProvider extends ChangeNotifier {
 
   /* Implementando El Debouncer Con El StreamController */
   final StreamController<List<Movie>> _suggestionStreamController =
-      new StreamController.broadcast();
+      StreamController.broadcast();
 
   Stream<List<Movie>> get suggestionStream =>
-      this._suggestionStreamController.stream;
+      _suggestionStreamController.stream;
 
   MoviesProvider() {
     /* print('MoviesProvider Inicializado En Su Método Constructor'); */
-    this.getPopularMovies();
-    this.getRateTopMovies();
-    this.getUpcomingMovies();
-    this.getOnDisplayMovies();
+    getPopularMovies();
+    getRateTopMovies();
+    getUpcomingMovies();
+    getOnDisplayMovies();
   }
 
   /* ======================= PETICIÓN HTTP (GET JSON DATA) ============================= */
   Future<String> _getJsonData(String segment, [int page = 1]) async {
-    final url = Uri.https(this._baseUrl, segment,
+    final url = Uri.https(_baseUrl, segment,
         {'api_key': _apiKey, 'language': _language, 'page': '$page'});
 
     /* TODO: Esto Debe Ingresarse Dentro De Un Try - Catch, En Caso Tal Que Falle La Petición */
@@ -61,7 +61,7 @@ class MoviesProvider extends ChangeNotifier {
     final responseMapeadaPorLosModels =
         NowPlayingResponse.fromJson(responseJsonData);
 
-    this.onDisplayMovies = responseMapeadaPorLosModels.results;
+    onDisplayMovies = responseMapeadaPorLosModels.results;
     notifyListeners();
   }
   /* ================================================================= */
@@ -69,7 +69,7 @@ class MoviesProvider extends ChangeNotifier {
   /* ======================= GET MOVIES POPULARES ============================= */
   getPopularMovies() async {
     /* Antes De Hacer La Petición Voy A Incrementar La Página A La Que Va Ir La Solicitud */
-    this._popularPage++;
+    _popularPage++;
 
     final responseJsonData =
         await _getJsonData('3/movie/popular', _popularPage);
@@ -77,8 +77,8 @@ class MoviesProvider extends ChangeNotifier {
     final responseMapeadaPorLosModels =
         PopularResponse.fromJson(responseJsonData);
 
-    this.popularMovies = [
-      ...this.popularMovies,
+    popularMovies = [
+      ...popularMovies,
       ...responseMapeadaPorLosModels.results
     ];
 
@@ -88,7 +88,7 @@ class MoviesProvider extends ChangeNotifier {
 
   /* ======================= GET MOVIES MEJOR CALIFICADAS ============================= */
   getRateTopMovies() async {
-    this._topRatePage++;
+    _topRatePage++;
 
     final responseJsonData =
         await _getJsonData('3/movie/top_rated', _topRatePage);
@@ -96,8 +96,8 @@ class MoviesProvider extends ChangeNotifier {
     final responseMapeadaPorLosModels =
         TopRateResponse.fromJson(responseJsonData);
 
-    this.topRateMovies = [
-      ...this.topRateMovies,
+    topRateMovies = [
+      ...topRateMovies,
       ...responseMapeadaPorLosModels.results
     ];
 
@@ -107,7 +107,7 @@ class MoviesProvider extends ChangeNotifier {
 
   /* ======================= GET MOVIES PROXIMOS LANZAMIENTOS ============================= */
   getUpcomingMovies() async {
-    this._upcomingPage++;
+    _upcomingPage++;
 
     final responseJsonData =
         await _getJsonData('3/movie/upcoming', _topRatePage);
@@ -115,8 +115,8 @@ class MoviesProvider extends ChangeNotifier {
     final responseMapeadaPorLosModels =
         UpcomingResponse.fromJson(responseJsonData);
 
-    this.upcomingMovies = [
-      ...this.upcomingMovies,
+    upcomingMovies = [
+      ...upcomingMovies,
       ...responseMapeadaPorLosModels.results
     ];
 
@@ -149,7 +149,7 @@ class MoviesProvider extends ChangeNotifier {
 
   /* ======================= SEARCH MOVIE ============================= */
   Future<List<Movie>> searchMovies(String query) async {
-    final url = Uri.https(this._baseUrl, '3/search/movie',
+    final url = Uri.https(_baseUrl, '3/search/movie',
         {'api_key': _apiKey, 'language': _language, 'query': query});
 
     final responseJsonData = await http.get(url);
@@ -165,15 +165,15 @@ class MoviesProvider extends ChangeNotifier {
     debouncer.value = '';
     debouncer.onValue = (value) async {
       // print('Tenemos Valor a buscar: $value');
-      final results = await this.searchMovies(value);
-      this._suggestionStreamController.add(results);
+      final results = await searchMovies(value);
+      _suggestionStreamController.add(results);
     };
 
-    final timer = Timer.periodic(Duration(milliseconds: 300), (_) {
+    final timer = Timer.periodic(const Duration(milliseconds: 300), (_) {
       debouncer.value = searchItem;
     });
 
-    Future.delayed(Duration(milliseconds: 301)).then((value) => timer.cancel());
+    Future.delayed(const Duration(milliseconds: 301)).then((value) => timer.cancel());
   }
   /* ================================================================= */
 }

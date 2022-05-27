@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 /* Provider */
-import 'package:peliculas_app/providers/movies_provider.dart';
+import 'package:movies_api_flutter/providers/movies_provider.dart';
 
 /* Models */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 class MovieSearchDelegate extends SearchDelegate {
   /* Propiedad Para Cambiar El Nombre Del Buscador */
@@ -16,8 +16,8 @@ class MovieSearchDelegate extends SearchDelegate {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () => this.query = '',
+        icon: const Icon(Icons.clear),
+        onPressed: () => query = '',
       ),
     ];
   }
@@ -25,26 +25,24 @@ class MovieSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
-        this.close(context, null);
+        close(context, null);
       },
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return Text('BuildResults');
+    return const Text('BuildResults');
   }
 
   Widget _emptyContainer() {
-    return Container(
-      child: Center(
-        child: Icon(
-          Icons.movie_creation_outlined,
-          color: Colors.black38,
-          size: 130,
-        ),
+    return const Center(
+      child: Icon(
+        Icons.movie_creation_outlined,
+        color: Colors.black38,
+        size: 130,
       ),
     );
   }
@@ -53,20 +51,20 @@ class MovieSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     /* this.query Ya Viene Implicito De La Clase SearchDelegate */
-    if (this.query.isEmpty) {
-      return this._emptyContainer();
+    if (query.isEmpty) {
+      return _emptyContainer();
     }
 
     final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
     /* Cada Vez Que Se Toque Una Tecla, Se LLama Este Método */
-    moviesProvider.getSuggetionsByQuery(this.query);
+    moviesProvider.getSuggetionsByQuery(query);
 
     /* Este StreamBuilder() Solo Se Va A Redibujar Unicamente Cuando El suggestionStream Emite Un Valor */
     return StreamBuilder(
       stream: moviesProvider.suggestionStream,
       builder: (_, AsyncSnapshot<List<Movie>> snapshot) {
         if (!snapshot.hasData) {
-          return this._emptyContainer();
+          return _emptyContainer();
         }
 
         final movies = snapshot.data!;
@@ -104,22 +102,22 @@ class _MovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this.movie.heroAnimationID = 'search-${this.movie.id}';
+    movie.heroAnimationID = 'search-${movie.id}';
 
     return ListTile(
       leading: Hero(
-        tag: this.movie.heroAnimationID!,
+        tag: movie.heroAnimationID!,
         child: FadeInImage(
-          placeholder: AssetImage('assets/images/no-image.jpg'),
-          image: NetworkImage(this.movie.getPosterImg()),
+          placeholder: const AssetImage('assets/images/no-image.jpg'),
+          image: NetworkImage(movie.getPosterImg()),
           width: 50,
           fit: BoxFit.contain,
         ),
       ),
-      title: Text(this.movie.title),
-      subtitle: Text(this.movie.originalTitle),
+      title: Text(movie.title),
+      subtitle: Text(movie.originalTitle),
       onTap: () {
-        Navigator.pushNamed(context, 'details', arguments: this.movie);
+        Navigator.pushNamed(context, 'details', arguments: movie);
       },
     );
   }

@@ -1,13 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /* Actor Provider */
-import 'package:peliculas_app/providers/actor_provider.dart';
+import 'package:movies_api_flutter/providers/actor_provider.dart';
 
 /* Actor Model */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 class DetailsActorScreen extends StatefulWidget {
   const DetailsActorScreen({Key? key}) : super(key: key);
@@ -17,31 +17,34 @@ class DetailsActorScreen extends StatefulWidget {
 }
 
 class _DetailsActorScreenState extends State<DetailsActorScreen> {
-  BannerAd? bannerAd;
-  bool isLoaded = false;
+  NativeAd? _nativeVideoAd;
+  bool _isLoadedVideoNative = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
+    _loadVideoNativeAd();
+  }
 
-    bannerAd = BannerAd(
-      size: AdSize.banner,
-      adUnitId: "ca-app-pub-8802721251339887/6087297639",
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            isLoaded = true;
-          });
-          // print("Banner Ad Loaded");
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        },
-      ),
-      request: AdRequest(),
+  void _loadVideoNativeAd() {
+    _nativeVideoAd = NativeAd(
+      // adUnitId: 'ca-app-pub-3940256099942544/1044960115',
+      adUnitId: 'ca-app-pub-8702651755109746/9836788926',
+      factoryId: 'listTile',
+      request: const AdRequest(),
+      listener: NativeAdListener(onAdLoaded: (ad) {
+        /* print('Video Ad Loaded Successfully'); */
+        setState(() {
+          _isLoadedVideoNative = true;
+        });
+      }, onAdFailedToLoad: (ad, error) {
+        /* print(
+            'Actually Ad Video Failed To Load ${error.message}, ${error.code}'); */
+        ad.dispose();
+      }),
     );
 
-    bannerAd!.load();
+    _nativeVideoAd!.load();
   }
 
   @override
@@ -59,7 +62,7 @@ class _DetailsActorScreenState extends State<DetailsActorScreen> {
               backgroundColor: Colors.black12,
               elevation: 0,
               centerTitle: true,
-              title: Text(
+              title: const Text(
                 'Información No Disponible',
                 style: TextStyle(
                   color: Colors.white38,
@@ -68,7 +71,7 @@ class _DetailsActorScreenState extends State<DetailsActorScreen> {
             ),
             body: Container(
               alignment: Alignment.center,
-              child: CupertinoActivityIndicator(),
+              child: const CupertinoActivityIndicator(),
             ),
           );
         }
@@ -84,14 +87,18 @@ class _DetailsActorScreenState extends State<DetailsActorScreen> {
                 delegate: SliverChildListDelegate(
                   [
                     _PosterAndTitle(actor: actorInformation),
-                    isLoaded
-                        ? Container(
-                            height: 50,
-                            child: AdWidget(ad: bannerAd!),
-                          )
-                        : SizedBox(),
+                    Container(
+                      height: 300,
+                      child: !_isLoadedVideoNative
+                          ? FadeInImage(
+                              placeholder:
+                                  AssetImage('assets/images/giphy.gif'),
+                              image: AssetImage('assets/images/giphy.gif'),
+                            )
+                          : AdWidget(ad: _nativeVideoAd!),
+                    ),
                     _Overview(actor: actorInformation),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -117,16 +124,16 @@ class _CustomAppBar extends StatelessWidget {
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
-        titlePadding: EdgeInsets.all(0),
+        titlePadding: const EdgeInsets.all(0),
         title: Container(
           color: Colors.black12,
           alignment: Alignment.bottomCenter,
           width: double.infinity,
-          child: Text(this.actor.name, style: TextStyle(fontSize: 16)),
+          child: Text(actor.name, style: const TextStyle(fontSize: 16)),
         ),
         background: FadeInImage(
-          placeholder: AssetImage('assets/images/loading.gif'),
-          image: NetworkImage(this.actor.getProfilePath()),
+          placeholder: const AssetImage('assets/images/loading.gif'),
+          image: NetworkImage(actor.getProfilePath()),
           fit: BoxFit.cover,
         ),
       ),
@@ -145,49 +152,50 @@ class _PosterAndTitle extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(top: 20, bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(top: 20, bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           Hero(
-            tag: 'actor-${this.actor.id}-1',
+            tag: 'actor-${actor.id}-1',
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: FadeInImage(
                 width: 110,
                 height: 160,
-                placeholder: AssetImage('assets/images/no-image.jpg'),
-                image: NetworkImage(this.actor.getProfilePath()),
+                placeholder: const AssetImage('assets/images/no-image.jpg'),
+                image: NetworkImage(actor.getProfilePath()),
               ),
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: sizeWidth.width - 190),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  this.actor.name,
+                  actor.name,
                   style: textTheme.headline5,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
                 Text(
-                  '${this.actor.birthday} / ${this.actor.deathday}',
+                  '${actor.birthday} / ${actor.deathday}',
                   style: textTheme.subtitle1,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
                 Row(
                   children: [
-                    Icon(Icons.place_outlined, size: 15, color: Colors.grey),
-                    SizedBox(width: 5),
+                    const Icon(Icons.place_outlined,
+                        size: 15, color: Colors.grey),
+                    const SizedBox(width: 5),
                     ConstrainedBox(
                       constraints:
                           BoxConstraints(maxWidth: sizeWidth.width - 210),
                       child: Text(
-                        this.actor.placeOfBirth,
+                        actor.placeOfBirth,
                         style: textTheme.caption,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
@@ -214,54 +222,28 @@ class _Overview extends StatefulWidget {
 }
 
 class _OverviewState extends State<_Overview> {
-  BannerAd? bannerAdTwo;
-  bool isLoadedTwo = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    bannerAdTwo = BannerAd(
-      size: AdSize.banner,
-      adUnitId: "ca-app-pub-8802721251339887/6087297639",
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            isLoadedTwo = true;
-          });
-          // print("Banner Ad Two Loaded");
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        },
-      ),
-      request: AdRequest(),
-    );
-
-    bannerAdTwo!.load();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return this.widget.actor.biography.length > 0
+    return widget.actor.biography.isNotEmpty
         ? Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 child: Text(
-                  this.widget.actor.biography,
+                  widget.actor.biography,
                   style: Theme.of(context).textTheme.subtitle1,
                   textAlign: TextAlign.justify,
                 ),
               ),
-              isLoadedTwo
-                  ? Container(
+              /* isLoadedTwo
+                  ? SizedBox(
                       height: 50,
                       child: AdWidget(ad: bannerAdTwo!),
                     )
-                  : SizedBox()
+                  : const SizedBox() */
             ],
           )
-        : SizedBox();
+        : const SizedBox();
   }
 }

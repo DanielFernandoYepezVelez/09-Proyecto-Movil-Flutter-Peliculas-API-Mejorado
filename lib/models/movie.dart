@@ -55,18 +55,20 @@ class Movie {
       );
 
   getPosterImg() {
-    if (this.posterPath == null) {
-      return 'https://mantenimientocode.xyz/images/not-found.jpg';
+    if (posterPath == null) {
+      return 'https://i.stack.imgur.com/GNhxO.png';
+      // return 'https://mantenimientocode.xyz/images/not-found.jpg';
     } else {
-      return 'https://image.tmdb.org/t/p/w500/${this.posterPath}';
+      return 'https://image.tmdb.org/t/p/w500/$posterPath';
     }
   }
 
   getBackgroundImg() {
-    if (this.backdropPath == null) {
-      return 'https://mantenimientocode.xyz/images/not-found.jpg';
+    if (backdropPath == null) {
+      return 'https://i.stack.imgur.com/GNhxO.png';
+      // return 'https://mantenimientocode.xyz/images/not-found.jpg';
     } else {
-      return 'https://image.tmdb.org/t/p/w500/${this.backdropPath}';
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
     }
   }
 }

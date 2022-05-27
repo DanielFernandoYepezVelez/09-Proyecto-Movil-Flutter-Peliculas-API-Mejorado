@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-/* Movie Models */
-import 'package:peliculas_app/models/models.dart';
+/* Movie Model */
+import 'package:movies_api_flutter/models/models.dart';
 
 class TopRateResponse {
   int page;

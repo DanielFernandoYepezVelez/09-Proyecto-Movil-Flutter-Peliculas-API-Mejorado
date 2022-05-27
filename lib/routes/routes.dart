@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 /* Screens */
-import 'package:peliculas_app/screens/screens.dart';
+import 'package:movies_api_flutter/screens/screens.dart';
 
 final Map<String, Widget Function(BuildContext)> appRoutes = {
-  'home': (_) => HomeScreen(),
-  'details': (_) => DetailsScreen(),
-  'actor': (_) => DetailsActorScreen(),
+  'home': (_) => const HomeScreen(),
+  'details': (_) => const DetailsScreen(),
+  'actor': (_) => const DetailsActorScreen(),
 };

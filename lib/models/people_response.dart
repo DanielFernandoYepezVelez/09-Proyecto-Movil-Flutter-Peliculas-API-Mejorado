@@ -54,10 +54,10 @@ class PeopleResponse {
       );
 
   getProfilePath() {
-    if (this.profilePath == null) {
+    if (profilePath == null) {
       return 'https://mantenimientocode.xyz/images/not-found.jpg';
     } else {
-      return 'https://image.tmdb.org/t/p/w500/${this.profilePath}';
+      return 'https://image.tmdb.org/t/p/w500/$profilePath';
     }
   }
 }

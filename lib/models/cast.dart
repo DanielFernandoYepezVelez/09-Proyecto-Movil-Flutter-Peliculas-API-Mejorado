@@ -56,10 +56,11 @@ class Cast {
       );
 
   getProfilePath() {
-    if (this.profilePath == null) {
-      return 'https://mantenimientocode.xyz/images/not-found.jpg';
+    if (profilePath == null) {
+      // return 'https://mantenimientocode.xyz/images/not-found.jpg';
+      return 'https://i.stack.imgur.com/GNhxO.png';
     } else {
-      return 'https://image.tmdb.org/t/p/w500/${this.profilePath}';
+      return 'https://image.tmdb.org/t/p/w500/$profilePath';
     }
   }
 }

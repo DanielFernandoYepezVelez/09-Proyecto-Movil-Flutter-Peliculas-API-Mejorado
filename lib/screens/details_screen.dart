@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /* Models */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 /* Widgets */
-import 'package:peliculas_app/widgets/widgets.dart';
+import 'package:movies_api_flutter/widgets/widgets.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({Key? key}) : super(key: key);
@@ -15,54 +15,34 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  BannerAd? bannerAd;
-  BannerAd? bannerAdTwo;
-  bool isLoaded = false;
-  bool isLoadedTwo = false;
+  NativeAd? _nativeVideoAd2;
+  bool _isLoadedVideoNative2 = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
+    _loadVideoNativeAd2();
+  }
 
-    bannerAd = BannerAd(
-      size: AdSize.banner,
-      adUnitId: "ca-app-pub-8802721251339887/6087297639",
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            isLoaded = true;
-          });
-          // print("Banner Ad Loaded");
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        },
-      ),
-      request: AdRequest(),
+  void _loadVideoNativeAd2() {
+    _nativeVideoAd2 = NativeAd(
+      // adUnitId: 'ca-app-pub-3940256099942544/1044960115',
+      adUnitId: 'ca-app-pub-8702651755109746/9836788926',
+      factoryId: 'listTile',
+      request: const AdRequest(),
+      listener: NativeAdListener(onAdLoaded: (ad) {
+        /* print('Video Ad Loaded Successfully'); */
+        setState(() {
+          _isLoadedVideoNative2 = true;
+        });
+      }, onAdFailedToLoad: (ad, error) {
+        /* print(
+            'Actually Ad Video Failed To Load ${error.message}, ${error.code}'); */
+        ad.dispose();
+      }),
     );
 
-    bannerAd!.load();
-
-    /* ---------------------------------------------- */
-
-    bannerAdTwo = BannerAd(
-      size: AdSize.banner,
-      adUnitId: "ca-app-pub-8802721251339887/6087297639",
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          setState(() {
-            isLoadedTwo = true;
-          });
-          // print("Banner Ad Two Loaded");
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-        },
-      ),
-      request: AdRequest(),
-    );
-
-    bannerAdTwo!.load();
+    _nativeVideoAd2!.load();
   }
 
   @override
@@ -79,19 +59,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
             delegate: SliverChildListDelegate(
               [
                 _PosterAndTitle(moviePoster: movie),
-                isLoaded
-                    ? Container(
-                        height: 50,
-                        child: AdWidget(ad: bannerAd!),
-                      )
-                    : SizedBox(),
+                Container(
+                  height: 300,
+                  child: !_isLoadedVideoNative2
+                      ? FadeInImage(
+                          placeholder: AssetImage('assets/images/giphy.gif'),
+                          image: AssetImage('assets/images/giphy.gif'),
+                        )
+                      : AdWidget(ad: _nativeVideoAd2!),
+                ),
                 _Overview(movieOverview: movie),
-                isLoadedTwo
-                    ? Container(
-                        height: 50,
-                        child: AdWidget(ad: bannerAdTwo!),
-                      )
-                    : SizedBox(),
                 CastingCards(movieId: movie.id),
               ],
             ),
@@ -116,20 +93,20 @@ class _CustomAppBar extends StatelessWidget {
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
-        titlePadding: EdgeInsets.all(0),
+        titlePadding: const EdgeInsets.all(0),
         title: Container(
           width: double.infinity,
           color: Colors.black12,
           alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
           child: Text(
             movieAppBar.title,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
         ),
         background: FadeInImage(
-          placeholder: AssetImage('assets/images/loading.gif'),
+          placeholder: const AssetImage('assets/images/loading.gif'),
           image: NetworkImage(movieAppBar.getBackgroundImg()),
           fit: BoxFit.cover,
         ),
@@ -150,45 +127,46 @@ class _PosterAndTitle extends StatelessWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(top: 20, bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(top: 20, bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           Hero(
-            tag: this.moviePoster.heroAnimationID!,
+            tag: moviePoster.heroAnimationID!,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: FadeInImage(
                 height: 160,
-                placeholder: AssetImage('assets/images/no-image.jpg'),
-                image: NetworkImage(this.moviePoster.getPosterImg()),
+                placeholder: const AssetImage('assets/images/no-image.jpg'),
+                image: NetworkImage(moviePoster.getPosterImg()),
               ),
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: sizeWidth.width - 190),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  this.moviePoster.title,
+                  moviePoster.title,
                   style: textTheme.headline5,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
                 Text(
-                  this.moviePoster.originalTitle,
+                  moviePoster.originalTitle,
                   style: textTheme.headline5,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
                 Row(
                   children: [
-                    Icon(Icons.star_outline, size: 15, color: Colors.grey),
-                    SizedBox(width: 5),
+                    const Icon(Icons.star_outline,
+                        size: 15, color: Colors.grey),
+                    const SizedBox(width: 5),
                     Text(
-                      '${this.moviePoster.voteAverage}',
+                      '${moviePoster.voteAverage}',
                       style: textTheme.caption,
                     ),
                   ],
@@ -212,9 +190,9 @@ class _Overview extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
           child: Text(
-            this.movieOverview.overview,
+            movieOverview.overview,
             style: Theme.of(context).textTheme.subtitle1,
             textAlign: TextAlign.justify,
           ),

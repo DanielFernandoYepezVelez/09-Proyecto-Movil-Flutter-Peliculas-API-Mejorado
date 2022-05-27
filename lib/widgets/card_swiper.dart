@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 
 /* Models */
-import 'package:peliculas_app/models/models.dart';
+import 'package:movies_api_flutter/models/models.dart';
 
 class CardSwiper extends StatelessWidget {
   final List<Movie> movies;
@@ -16,26 +16,26 @@ class CardSwiper extends StatelessWidget {
     final platformSize = MediaQuery.of(context).size;
 
     /* Aplicando Un Loading */
-    if (this.movies.length == 0) {
-      return Container(
+    if (movies.isEmpty) {
+      return SizedBox(
         width: double.infinity,
         height: platformSize.height * 0.5,
-        child: Center(child: CircularProgressIndicator()),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    return Container(
+    return SizedBox(
       // color: Colors.red,
       width: double.infinity,
       // height: 480,
       height: platformSize.height * 0.5,
       child: Swiper(
-        itemCount: this.movies.length,
+        itemCount: movies.length,
         layout: SwiperLayout.STACK,
         itemWidth: platformSize.width * 0.6,
         itemHeight: platformSize.height * 0.45,
         itemBuilder: (_, int index) {
-          final movie = this.movies[index];
+          final movie = movies[index];
           return _MovieImageMain(movieCard: movie);
         },
       ),
@@ -45,25 +45,31 @@ class CardSwiper extends StatelessWidget {
 
 /* Este Widget Solo Va A Vivir Dentro De Movie Slider Y No
  Se Lo Presente Al Mundo Exterior */
-class _MovieImageMain extends StatelessWidget {
+class _MovieImageMain extends StatefulWidget {
   final Movie movieCard;
 
   const _MovieImageMain({Key? key, required this.movieCard}) : super(key: key);
 
   @override
+  State<_MovieImageMain> createState() => _MovieImageMainState();
+}
+
+class _MovieImageMainState extends State<_MovieImageMain> {
+  @override
   Widget build(BuildContext context) {
-    this.movieCard.heroAnimationID = 'swiper-${this.movieCard.id}';
+    widget.movieCard.heroAnimationID = 'swiper-${widget.movieCard.id}';
 
     return GestureDetector(
-      onTap: () =>
-          Navigator.pushNamed(context, 'details', arguments: movieCard),
+      onTap: () {
+        Navigator.pushNamed(context, 'details', arguments: widget.movieCard);
+      },
       child: Hero(
-        tag: this.movieCard.heroAnimationID!,
+        tag: widget.movieCard.heroAnimationID!,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: FadeInImage(
-            placeholder: AssetImage('assets/images/loading.gif'),
-            image: NetworkImage(this.movieCard.getPosterImg()),
+            placeholder: const AssetImage('assets/images/loading.gif'),
+            image: NetworkImage(widget.movieCard.getPosterImg()),
             fit: BoxFit.cover, // Aplica El Alto Del Contenedor Padre
           ),
         ),

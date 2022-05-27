@@ -1,5 +1,7 @@
 import 'dart:convert';
-import 'package:peliculas_app/models/models.dart';
+
+/* Movie Model */
+import 'package:movies_api_flutter/models/models.dart';
 
 class SearchResponse {
   int page;
