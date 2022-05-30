@@ -9,12 +9,12 @@ import 'package:movies_api_flutter/providers/movies_provider.dart';
 /* Routes */
 import 'package:movies_api_flutter/routes/routes.dart';
 
-AppOpenAd? _appOpenAd;
+/* AppOpenAd? _appOpenAd;
 
 Future<void> _loadAppOpenAd() async {
   await AppOpenAd.load(
     // adUnitId: 'ca-app-pub-3940256099942544/3419835294',
-    adUnitId: 'ca-app-pub-8702651755109746/9887107421',
+    adUnitId: 'ca-app-pub-2118916369098036/6225249921',
     request: const AdRequest(),
     adLoadCallback: AppOpenAdLoadCallback(
       onAdLoaded: (ad) {
@@ -29,12 +29,12 @@ Future<void> _loadAppOpenAd() async {
     ),
     orientation: AppOpenAd.orientationPortrait,
   );
-}
+} */
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MobileAds.instance.initialize();
-  await _loadAppOpenAd();
+  // await _loadAppOpenAd();
   runApp(const AppState());
 }
 
